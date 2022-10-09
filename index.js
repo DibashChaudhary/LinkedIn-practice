@@ -1,62 +1,69 @@
+const apiUrl = "https://randomuser.me/api/?";
+let userList = [];
 
-const apiUrl = 'https://randomuser.me/api/?results=20';
+const displayElm = document.querySelector("#list");
 
-const displayElm = document.getElementById("first");
-
-const fetchUsers=()=> {
-    fetch(apiUrl)
-        .then((response) => response.json())
-        .then((data) => {
-            display(data.results);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-
-}
+const fetchUsers = (params = "results=20") => {
+    console.log("sdfsdf")
+  fetch(apiUrl + params)
+    .then((response) => response.json())
+    .then((data) => {
+      display(data.results);
+      userList = data.results;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 const display = (users) => {
-    let str = ""
+  let str = "";
+  console.log(users);
+  users.map((item, i) => {
+    str += `
+            <div class="card m-2" style="width: 20rem">
+            <img src="${item.picture.large}" class="card-img-top" alt="..." />
+            <div class="card-body">
+            <h5 class="card-title">
+            ${item.name.title}  ${item.name.first}  ${item.name.last}
+            </h5>
+            <p class="card-text">
+            <ul class='list-unstyled'>
+            <li> <i class="fa-solid fa-mobile"></i> ${item.phone} </li>
+            <li > <i class="fa-solid fa-envelope"></i> ${item.email}</li>
+            <li> <i class="fa-solid fa-calendar-days"></i> ${item.dob.date}</li>
+            <li class="d-flex> <i class="fa-solid fa-house"></i> ${item.location.street.number} ${item.location.street.name}, ${item.location.postcode},  ${item.location.state}</li>
+            </ul>   
+            
+            </p>
+            
+            </div>
+            </div>
+`;
+  });
 
-    console.log(users);
-    
-    users.map((item, i) =>{
-        str += 
-        `
-        <div class="card mt-2" style="width: 300rem;">
-            <img src="${item.picture.large}" class="card-img-top" alt="...">
-        <div class="card-body">
-        <h5 class="card-title">
-            ${item.name.title} ${item.name.first} ${item.name.last}
-        </h5>
-        <p class="card-text">
-            <ul clas="list-unstyled">
-            <li><i class="fa-solid fa-envelope"> ${item.email}</i></li>
-            <li><i class="fa-solid fa-calendar-days"> ${item.dob.date}</i></li>
-            <li><i class="fa-solid fa-phone"> ${item.phone}</i></li>
-            <li><i class="fa-solid fa-house"> ${item.location.city} ${item.location.country} ${item.location.postcode} ${item.location.state}</i></li>
-            </ul>
-        </p>
-        </div>
-        </div>
-        `
-       
-    })
+  displayElm.innerHTML = str;
 
-    displayElm.innerHTML = str;
-    
-}
+  document.querySelector("#count").innerText = users.length;
+};
 
 fetchUsers();
 
-const handleOnSearch = (e) =>{
-    console.log(e.value);
-    const str = e.value;
+const handleOnChage = (e) => {
+  console.log(e.value);
+  const params = "results=20&gender=" + e.value;
+  fetchUsers(params);
+};
 
-    const filteredUser = iserList.filter((item) => {
-        const userName = item.name.first + item.name.last;
+const handleOnSearch = (e) => {
+  console.log(e.value);
+  const str = e.value;
 
-        return userName.toLowerCase().includes(str.toLowerCase());
-    });
-    display(filteredUser)
-}
+  const filteredUser = userList.filter((item) => {
+    const userName = item.name.first + item.name.last;
+
+    return userName.toLowerCase().includes(str.toLowerCase());
+  });
+
+  display(filteredUser);
+};
